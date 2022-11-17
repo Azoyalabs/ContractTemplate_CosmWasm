@@ -1,16 +1,15 @@
-#![allow(unreachable_patterns)]
-
 pub mod contract;
-mod contract_tests;
 mod error;
 
-pub mod instantiation;
-pub mod execute_messages;
+pub mod msg;
 
-pub mod execute;
-pub mod query;
+pub mod contract_admin_execute;
+pub mod contract_execute;
+pub mod contract_query;
 
 pub mod state;
 pub mod structs;
 
 pub use crate::error::ContractError;
+
+//mod tests;

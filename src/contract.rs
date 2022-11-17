@@ -1,21 +1,18 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 
-use crate::execute::admin::dispatch_admin;
-use crate::execute::default::dispatch_default;
+use crate::contract_admin_execute::route_admin_execute;
+use crate::contract_execute::route_execute;
 
-use crate::execute_messages::msg::{ExecuteMsg, MigrateMsg};
-
-use crate::instantiation;
-use crate::instantiation::msg::InstantiateMsg;
-use crate::query::query_message::QueryMsg;
+use crate::contract_query::route_query;
+use crate::msg::{MigrateMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
 
 use crate::error::ContractError;
+use crate::state::ADMIN;
 
-
-//use cw2::{set_contract_version, get_contract_version, ContractVersion};
 use cw2::set_contract_version;
+
 
 // version info for migration info
 const CONTRACT_NAME: &str = "AzoyaLabs:ContractTemplate";
@@ -24,18 +21,19 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     deps: DepsMut,
-    env: Env,
+    _env: Env,
     info: MessageInfo,
-    msg: InstantiateMsg,
+    _msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+    ADMIN.save(deps.storage, &info.sender)?;
 
-    return instantiation::execute::execute_instantiation(deps, env, info, msg);
+    return Ok(Response::new());
 }
 
 #[entry_point]
 pub fn migrate(_deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, ContractError> {
-    // No state migrations performed, just returned a Response
+
     Ok(Response::default())
 }
 
@@ -48,15 +46,13 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         // Admin
-        ExecuteMsg::Admin(admin_msg) => dispatch_admin(deps, env, info, admin_msg),
+        ExecuteMsg::Admin(admin_msg) => route_admin_execute(deps, env, info, admin_msg),
         // Default
-        _ => dispatch_default(deps, env, info, msg),
+        _ => route_execute(deps, env, info, msg),
     }
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
-    match msg {
-        _ => return to_binary(&42),
-    }
+pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
+    return route_query(deps, env, msg);
 }
