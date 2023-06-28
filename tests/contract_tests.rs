@@ -7,12 +7,11 @@ mod tests {
     use cw_multi_test::{App, Executor};
     use robot_code_gen::Robot;
 
-    use crate::common::test_utils::get_contract;
     use crate::common::cosmwasm_contract_template_robot::CosmwasmContractTemplateRobot;
+    use crate::common::test_utils::get_contract;
 
     const TEST_ADMIN: &'static str = "ADMIN";
     const CONTRACT_LABEL: &'static str = "CONTRACT_LABEL";
-
 
     #[test]
     fn successful_deployment() {
@@ -34,7 +33,7 @@ mod tests {
         match instantiate_res {
             Ok(_contract_address) => (),
             Err(err) => panic!("Failed to instantiate contract: {}", err.to_string()),
-        }        
+        }
     }
 
     #[test]
@@ -56,8 +55,8 @@ mod tests {
 
         let contract_addr = instantiate_res.unwrap();
 
-        let robot = Robot{};
-    
+        let robot = Robot {};
+
         println!("admin is: {:?}", robot.get_admin(&router, &contract_addr));
     }
 }

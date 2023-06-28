@@ -6,13 +6,14 @@ use crate::contract_admin_execute::route_admin_execute;
 use crate::contract_execute::route_execute;
 
 use crate::contract_query::route_query;
-use crate::msg::{MigrateMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
 
 use crate::error::ContractError;
 use crate::state::ADMIN;
 
 use cw2::set_contract_version;
 
+const ENFORCE_ADMIN: bool = true;
 
 // version info for migration info
 const CONTRACT_NAME: &str = "AzoyaLabs:ContractTemplate";
@@ -21,19 +22,26 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     info: MessageInfo,
     _msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
     ADMIN.save(deps.storage, &info.sender)?;
 
+    if ENFORCE_ADMIN {
+        assert!(deps
+            .querier
+            .query_wasm_contract_info(env.contract.address)?
+            .admin
+            .is_some());
+    }
+
     return Ok(Response::new());
 }
 
 #[entry_point]
 pub fn migrate(_deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, ContractError> {
-
     Ok(Response::default())
 }
 

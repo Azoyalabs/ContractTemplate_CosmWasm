@@ -1,30 +1,23 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::Addr;
 
-
 #[cw_serde]
-pub struct InstantiateMsg {
-
-}
+pub struct InstantiateMsg {}
 
 #[cw_serde]
 pub enum AdminExecuteMsg {
     UpdateAdmin { new_admin: String },
-
 }
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    SampleExecute { },
+    SampleExecute {},
 
     Admin(AdminExecuteMsg),
 }
 
 #[cw_serde]
-pub struct MigrateMsg {
-    
-}
-
+pub struct MigrateMsg {}
 
 #[cw_serde]
 #[derive(QueryResponses)]
