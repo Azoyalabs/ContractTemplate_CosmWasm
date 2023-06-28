@@ -1,3 +1,5 @@
+pub mod cosmwasm_contract_template_robot;
+
 #[cfg(test)]
 pub mod test_utils {
     use cosmwasm_std::Empty;

@@ -21,7 +21,7 @@ pub enum ExecuteMsg {
 }
 
 #[cw_serde]
-pub enum MigrateMsg {
+pub struct MigrateMsg {
     
 }
 
